@@ -17,7 +17,9 @@ def search_prob(request):
     pro_id = '%' + pro_id + '%'
     pro_title = request.GET.get('pro_title','')
     pro_title = '%' + pro_title + '%'
-    tag_tile = request.GET.get('tag',None)
+    tag_title = request.GET.get('tag',None)
+    #print(tag_title)
+    tag_title = tag_title.split(',')
     dif_down = request.GET.get('dif_down','0')
     dif_up = request.GET.get('dif_up','100000')
     ratio_down = request.GET.get('ratio_down','0')
@@ -41,9 +43,7 @@ def search_prob(request):
     json_data = {}
     data_list = []
     for obj in obj_rawqueryset:
-        flag = 0  # 初值为0，表明这个题目的标签不符合搜索条件中的标签
-        if (tag_tile == None) :
-            flag = 1      #用户没有搜索条件中没有标签，那么这个题目肯定符合搜索条件
+        flag = 1  # 初值为1，表明这个题目的标签符合搜索条件中的标签
         data = {}     # 要在遍历里面创建字典用于存数据
         sol_list = []
         tag_list = []
@@ -58,12 +58,12 @@ def search_prob(request):
             sol_data["title"] = sol.title
             sol_data["url"] = sol.url
             sol_list.append(sol_data)
-        for tag in tag_rawqueryset:
-            # tag_data={}
-            # tag_data["name"] = tag.name
-            if (not flag and tag_tile == tag.name):
-                flag = 1
-            tag_list.append(tag.name)
+        tags = [tag.name for tag in tag_rawqueryset]
+        #print(tags)
+        for tag_name in tag_title:
+            if (tag_name not in tags):
+                flag = 0
+                break   
         if (not flag):
             continue
         data["id"] = obj.id
@@ -76,7 +76,7 @@ def search_prob(request):
         # data["solutions"] = sol_data
         # data["tag"] = tag_data
         data["solutions"] = sol_list
-        data["tag"] = tag_list
+        data["tag"] = tags
         data_list.append(data)
     json_data['ret'] = 0
     json_data['data'] = data_list
