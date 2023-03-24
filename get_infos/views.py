@@ -19,6 +19,7 @@ def search_prob(request):
     pro_title = '%' + pro_title + '%'
     tag_title = request.GET.get('tag',None)
     #print(tag_title)
+    #将输入的多个标签合并成列表
     tag_title = tag_title.split(',')
     dif_down = request.GET.get('dif_down','0')
     dif_up = request.GET.get('dif_up','100000')
